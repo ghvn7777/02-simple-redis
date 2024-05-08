@@ -16,9 +16,7 @@ impl CommandExecutor for HGet {
 // TODO: 没用 backend.getall() 函数，可以在 getall 函数里面返回 dashmap，然后写一个 dashmap 到 respmap 的 into 感觉会优雅点
 impl CommandExecutor for HGetAll {
     fn execute(self, backend: &crate::Backend) -> RespFrame {
-        let hmap = backend.hmap.get(&self.key);
-
-        match hmap {
+        match backend.hgetall(&self.key) {
             Some(hmap) => {
                 let mut data = Vec::with_capacity(hmap.len());
                 for v in hmap.iter() {
