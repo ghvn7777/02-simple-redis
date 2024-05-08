@@ -2,7 +2,9 @@ use enum_dispatch::enum_dispatch;
 
 use crate::{RespArray, RespFrame};
 
-use super::{CommandError, Echo, Get, HGet, HGetAll, HMGet, HSet, Set, Unrecognized};
+use super::{
+    CommandError, Echo, Get, HGet, HGetAll, HMGet, HSet, SAdd, SIsmember, Set, Unrecognized,
+};
 
 #[enum_dispatch(CommandExecutor)]
 #[derive(Debug)]
@@ -13,6 +15,9 @@ pub enum Command {
     HSet(HSet),
     HGetAll(HGetAll),
     HMGet(HMGet),
+
+    SAdd(SAdd),
+    SIsmember(SIsmember),
 
     Echo(Echo),
 
@@ -46,6 +51,8 @@ impl TryFrom<RespArray> for Command {
                 b"HGETALL" | b"hgetall" => Ok(Command::HGetAll(HGetAll::try_from(v)?)),
                 b"HMGET" | b"hmget" => Ok(Command::HMGet(HMGet::try_from(v)?)),
                 b"ECHO" | b"echo" => Ok(Command::Echo(Echo::try_from(v)?)),
+                b"SADD" | b"sadd" => Ok(Command::SAdd(SAdd::try_from(v)?)),
+                b"SISMEMBER" | b"sismember" => Ok(Command::SIsmember(SIsmember::try_from(v)?)),
                 _ => Ok(Unrecognized.into()),
             },
             _ => Err(CommandError::InvalidCommand(

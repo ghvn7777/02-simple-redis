@@ -38,8 +38,9 @@ pub async fn stream_handler(stream: TcpStream, backend: Backend) -> Result<()> {
                 };
                 let response = request_handler(request).await?;
                 info!("Sending response: {:?}", response.frame);
+                // info!("sending: {:?}", response.frame.clone().encode());
+                // info!("Sending response: {:?}", String::from_utf8(response.frame.clone().encode()));
                 framed.send(response.frame.clone()).await?;
-                // info!("Sending response: {:?}", String::from_utf8(response.frame.encode()));
             }
             Some(Err(e)) => return Err(e),
             None => return Ok(()), // 数据不完整，等待下一次数据

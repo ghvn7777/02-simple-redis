@@ -1,6 +1,6 @@
 use std::{ops::Deref, sync::Arc};
 
-use dashmap::DashMap;
+use dashmap::{DashMap, DashSet};
 
 use crate::RespFrame;
 
@@ -11,6 +11,7 @@ pub struct Backend(Arc<BackendInner>);
 pub struct BackendInner {
     pub(crate) map: DashMap<String, RespFrame>,
     pub(crate) hmap: DashMap<String, DashMap<String, RespFrame>>,
+    pub(crate) set: DashMap<String, DashSet<String>>, // DashSet 里面元素要求实现 Eq，RespFrame 不符合，我们这里用 String
 }
 
 impl Deref for Backend {
@@ -32,6 +33,7 @@ impl Default for BackendInner {
         Self {
             map: DashMap::new(),
             hmap: DashMap::new(),
+            set: DashMap::new(),
         }
     }
 }
@@ -63,5 +65,14 @@ impl Backend {
 
     pub fn hgetall(&self, key: &str) -> Option<DashMap<String, RespFrame>> {
         self.hmap.get(key).map(|v| v.clone())
+    }
+
+    pub fn sadd(&self, key: String, member: String) {
+        let set = self.set.entry(key).or_default();
+        set.insert(member);
+    }
+
+    pub fn sismember(&self, key: &str, member: &str) -> Option<bool> {
+        self.set.get(key).map(|v| v.contains(member))
     }
 }

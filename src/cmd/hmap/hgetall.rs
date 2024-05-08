@@ -51,7 +51,6 @@ impl TryFrom<RespArray> for HGetAll {
 
 #[cfg(test)]
 mod tests {
-
     use crate::RespDecode;
     use anyhow::Result;
     use bytes::BytesMut;

@@ -2,6 +2,7 @@ mod command;
 mod echo;
 mod hmap;
 mod map;
+mod set;
 mod unrecognized;
 
 use crate::{Backend, RespArray, RespError, RespFrame, SimpleString};
@@ -15,6 +16,7 @@ pub use {
     echo::Echo,
     hmap::{HGet, HGetAll, HMGet, HSet},
     map::{Get, Set},
+    set::{SAdd, SIsmember},
     unrecognized::Unrecognized,
 };
 
