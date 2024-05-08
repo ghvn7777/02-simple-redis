@@ -1,12 +1,17 @@
+mod echo;
 mod hmap;
 mod map;
 
 use crate::{Backend, RespArray, RespError, RespFrame, SimpleString};
 use anyhow::Result;
 use enum_dispatch::enum_dispatch;
+use lazy_static::lazy_static;
 use thiserror::Error;
 
-use lazy_static::lazy_static;
+pub use {
+    echo::Echo,
+    map::{Get, Set},
+};
 
 // you could also use once_cell instead of lazy_static
 lazy_static! {
@@ -40,19 +45,10 @@ pub enum Command {
     HSet(HSet),
     HGetAll(HGetAll),
 
+    Echo(Echo),
+
     // unrecognized command
     Unrecognized(Unrecognized),
-}
-
-#[derive(Debug)]
-pub struct Get {
-    key: String,
-}
-
-#[derive(Debug)]
-pub struct Set {
-    key: String,
-    value: RespFrame,
 }
 
 #[derive(Debug)]
@@ -101,6 +97,7 @@ impl TryFrom<RespArray> for Command {
                 b"hget" => Ok(Command::HGet(HGet::try_from(v)?)),
                 b"hset" => Ok(Command::HSet(HSet::try_from(v)?)),
                 b"hgetall" => Ok(Command::HGetAll(HGetAll::try_from(v)?)),
+                b"ECHO" | b"echo" => Ok(Command::Echo(Echo::try_from(v)?)),
                 _ => Ok(Unrecognized.into()),
             },
             _ => Err(CommandError::InvalidCommand(
