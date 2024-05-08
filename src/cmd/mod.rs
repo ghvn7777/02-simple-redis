@@ -8,6 +8,7 @@ use thiserror::Error;
 
 use lazy_static::lazy_static;
 
+// you could also use once_cell instead of lazy_static
 lazy_static! {
     static ref RESP_OK: RespFrame = SimpleString::new("OK".to_string()).into();
 }
