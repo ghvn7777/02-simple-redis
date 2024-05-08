@@ -3,7 +3,7 @@ use crate::{
     RespArray, RespFrame,
 };
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq, Eq)]
 pub struct HGet {
     pub(crate) key: String,
     pub(crate) field: String,

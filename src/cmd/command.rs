@@ -2,7 +2,7 @@ use enum_dispatch::enum_dispatch;
 
 use crate::{RespArray, RespFrame};
 
-use super::{CommandError, Echo, Get, HGet, HGetAll, HSet, Set, Unrecognized};
+use super::{CommandError, Echo, Get, HGet, HGetAll, HMGet, HSet, Set, Unrecognized};
 
 #[enum_dispatch(CommandExecutor)]
 #[derive(Debug)]
@@ -12,6 +12,7 @@ pub enum Command {
     HGet(HGet),
     HSet(HSet),
     HGetAll(HGetAll),
+    HMGet(HMGet),
 
     Echo(Echo),
 
@@ -38,11 +39,12 @@ impl TryFrom<RespArray> for Command {
     fn try_from(v: RespArray) -> Result<Self, Self::Error> {
         match v.first() {
             Some(RespFrame::BulkString(ref cmd)) => match cmd.as_ref() {
-                b"get" => Ok(Command::Get(Get::try_from(v)?)),
-                b"set" => Ok(Command::Set(Set::try_from(v)?)),
-                b"hget" => Ok(Command::HGet(HGet::try_from(v)?)),
-                b"hset" => Ok(Command::HSet(HSet::try_from(v)?)),
-                b"hgetall" => Ok(Command::HGetAll(HGetAll::try_from(v)?)),
+                b"GET" | b"get" => Ok(Command::Get(Get::try_from(v)?)),
+                b"SET" | b"set" => Ok(Command::Set(Set::try_from(v)?)),
+                b"HGET" | b"hget" => Ok(Command::HGet(HGet::try_from(v)?)),
+                b"HSET" | b"hset" => Ok(Command::HSet(HSet::try_from(v)?)),
+                b"HGETALL" | b"hgetall" => Ok(Command::HGetAll(HGetAll::try_from(v)?)),
+                b"HMGET" | b"hmget" => Ok(Command::HMGet(HMGet::try_from(v)?)),
                 b"ECHO" | b"echo" => Ok(Command::Echo(Echo::try_from(v)?)),
                 _ => Ok(Unrecognized.into()),
             },

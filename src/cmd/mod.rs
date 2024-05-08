@@ -13,7 +13,7 @@ use thiserror::Error;
 pub use {
     command::Command,
     echo::Echo,
-    hmap::{HGet, HGetAll, HSet},
+    hmap::{HGet, HGetAll, HMGet, HSet},
     map::{Get, Set},
     unrecognized::Unrecognized,
 };
@@ -46,7 +46,7 @@ pub fn validate_command(
     names: &[&'static str],
     n_args: usize,
 ) -> Result<(), CommandError> {
-    if value.len() != n_args + names.len() {
+    if n_args != usize::MAX && value.len() != n_args + names.len() {
         return Err(CommandError::InvalidArgument(format!(
             "{} command must have exactly {} argument",
             names.join(" "),
