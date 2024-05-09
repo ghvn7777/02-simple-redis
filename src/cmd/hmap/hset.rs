@@ -1,5 +1,5 @@
 use crate::{
-    cmd::{extract_args, validate_command, CommandError, CommandExecutor, RESP_OK},
+    cmd::{extract_args, validate_command, CommandError, CommandExecutor},
     RespArray, RespFrame,
 };
 
@@ -12,8 +12,10 @@ pub struct HSet {
 
 impl CommandExecutor for HSet {
     fn execute(self, backend: &crate::Backend) -> RespFrame {
-        backend.hset(self.key, self.field, self.value);
-        RESP_OK.clone()
+        match backend.hset(self.key, self.field, self.value) {
+            Some(_) => (0_i64).into(),
+            None => (1_i64).into(),
+        }
     }
 }
 

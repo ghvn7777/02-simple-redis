@@ -32,9 +32,10 @@ get age       # 访问不存在的 key 会返回 (nil)
 
 ### 3.3 hmap 相关指令测试
 ```
-# HSET 返回 OK，这里和官方不太一样，官方支持多个参数，返回插入数量，我们限定了一个参数，只返回插入结果是否 OK
-HSET myhash field1 "Hello"
-HSET myhash field2 "World"
+# HSET 返回一个整型，字段是新添加的返回 1，如果是已经存在的返回 0
+HSET myhash field1 "Hello"  # (integer) 1
+HSET myhash field2 "World"  # (integer) 1
+HSET myhash field2 "World"  # (integer) 0
 hget myhash field1 # 返回 "Hello"
 ```
 
@@ -68,8 +69,10 @@ HMGET myhash field1 field2 nofield
 
 ### 3.4 set 相关指令测试
 
+和 hset 有点像，新添加返回 1，已经存在的返回 0
 ```
-SADD myset "one"      # 返回 OK
+SADD myset "one"      # 返回 (integer) 1
+SADD myset "one"      # 返回 (integer) 0 # 因为已经存在
 SISMEMBER myset "one" # 返回 (integer) 1
 SISMEMBER myset "two" # 返回 (integer) 0
 ```

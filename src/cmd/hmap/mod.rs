@@ -11,10 +11,7 @@ pub use hset::*;
 #[cfg(test)]
 mod tests {
 
-    use crate::{
-        cmd::{CommandExecutor, RESP_OK},
-        Backend, BulkString, RespArray, RespFrame, RespNull,
-    };
+    use crate::{cmd::CommandExecutor, Backend, BulkString, RespArray, RespFrame, RespNull};
     use anyhow::Result;
 
     use super::*;
@@ -28,7 +25,7 @@ mod tests {
             value: RespFrame::BulkString(b"world".into()),
         };
         let result = cmd.execute(&backend);
-        assert_eq!(result, RESP_OK.clone());
+        assert_eq!(result, 1.into());
 
         let cmd = HSet {
             key: "map".to_string(),

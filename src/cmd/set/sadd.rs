@@ -1,5 +1,5 @@
 use crate::{
-    cmd::{extract_args, validate_command, CommandError, CommandExecutor, RESP_OK},
+    cmd::{extract_args, validate_command, CommandError, CommandExecutor},
     RespArray, RespFrame,
 };
 
@@ -11,8 +11,7 @@ pub struct SAdd {
 
 impl CommandExecutor for SAdd {
     fn execute(self, backend: &crate::Backend) -> RespFrame {
-        backend.sadd(self.key, self.member);
-        RESP_OK.clone()
+        (backend.sadd(self.key, self.member) as i64).into()
     }
 }
 

@@ -58,18 +58,18 @@ impl Backend {
             .and_then(|v| v.get(field).map(|v| v.value().clone()))
     }
 
-    pub fn hset(&self, key: String, field: String, value: RespFrame) {
+    pub fn hset(&self, key: String, field: String, value: RespFrame) -> Option<RespFrame> {
         let hmap = self.hmap.entry(key).or_default();
-        hmap.insert(field, value);
+        hmap.insert(field, value)
     }
 
     pub fn hgetall(&self, key: &str) -> Option<DashMap<String, RespFrame>> {
         self.hmap.get(key).map(|v| v.clone())
     }
 
-    pub fn sadd(&self, key: String, member: String) {
+    pub fn sadd(&self, key: String, member: String) -> bool {
         let set = self.set.entry(key).or_default();
-        set.insert(member);
+        set.insert(member)
     }
 
     pub fn sismember(&self, key: &str, member: &str) -> Option<bool> {
