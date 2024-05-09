@@ -32,7 +32,7 @@ get age       # 访问不存在的 key 会返回 (nil)
 
 ### 3.3 hmap 相关指令测试
 ```
-# HSET 返回 OK，这里和官方不太一样，官方支持多个参数，返回插入数量，我们限定了一个参数，只返回插入结果
+# HSET 返回 OK，这里和官方不太一样，官方支持多个参数，返回插入数量，我们限定了一个参数，只返回插入结果是否 OK
 HSET myhash field1 "Hello"
 HSET myhash field2 "World"
 hget myhash field1 # 返回 "Hello"
