@@ -56,6 +56,7 @@ mod tests {
         assert!(frame);
 
         buf.extend_from_slice(b"#f\r\n");
+        println!("buf..........{:?}", buf);
         let frame = bool::decode(&mut buf)?;
         assert!(!frame);
 
