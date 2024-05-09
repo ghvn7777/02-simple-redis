@@ -2,8 +2,8 @@ use bytes::BytesMut;
 use enum_dispatch::enum_dispatch;
 
 use crate::{
-    BulkString, RespArray, RespDecode, RespError, RespMap, RespNull, RespNullArray, RespSet,
-    SimpleError, SimpleString,
+    BulkString, RespArray, RespDecode, RespError, RespMap, RespNull, RespSet, SimpleError,
+    SimpleString,
 };
 
 /// enum_dispatch 不仅实现了 RespFrame.encode() 的自动分发
@@ -16,7 +16,6 @@ pub enum RespFrame {
     Integer(i64),
     BulkString(BulkString),
     Array(RespArray),
-    NullArray(RespNullArray),
     Null(RespNull),
 
     Boolean(bool),
@@ -48,15 +47,8 @@ impl RespDecode for RespFrame {
                 Ok(frame.into())
             }
             Some(b'*') => {
-                // try null array first
-                match RespNullArray::decode(buf) {
-                    Ok(frame) => Ok(frame.into()),
-                    Err(RespError::NotComplete) => Err(RespError::NotComplete),
-                    Err(_) => {
-                        let frame = RespArray::decode(buf)?;
-                        Ok(frame.into())
-                    }
-                }
+                let frame = RespArray::decode(buf)?;
+                Ok(frame.into())
             }
             Some(b'_') => {
                 let frame = RespNull::decode(buf)?;
@@ -89,13 +81,7 @@ impl RespDecode for RespFrame {
     fn expect_length(buf: &[u8]) -> Result<usize, RespError> {
         let mut iter = buf.iter().peekable();
         match iter.peek() {
-            Some(b'*') => {
-                if buf.starts_with(b"*-1\r\n") {
-                    RespNullArray::expect_length(buf)
-                } else {
-                    RespArray::expect_length(buf)
-                }
-            }
+            Some(b'*') => RespArray::expect_length(buf),
             Some(b'~') => RespSet::expect_length(buf),
             Some(b'%') => RespMap::expect_length(buf),
             Some(b'$') => BulkString::expect_length(buf),
